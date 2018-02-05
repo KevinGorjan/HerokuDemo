@@ -1,5 +1,5 @@
 const PORT = process.env.PORT || 5000
-const fastify = require('../fastify')()
+const fastify = require('fastify')()
 
 const schema = {
 	schema: {
