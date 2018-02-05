@@ -21,7 +21,8 @@ fastify
 		reply
 			.send({hello: 'world'})
 	})
-	.listen(PORT, err => {
+
+fastify.listen(PORT, function(err) {
 	if (err) throw err
 	console.log(`server listening on ${fastify.server.address().port}`)
 })
