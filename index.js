@@ -1,28 +1,43 @@
-const fastify = require('fastify')()
+const fastify = require('fastify')();
+const fastifyPointOfView = require('point-of-view');
+const ejs = require('ejs')
+const fastifyStatic = require('fastify-static');
+const path = require('path');
+const resolve = require('path').resolve;
 
-const schema = {
-	schema: {
-		response: {
-			200: {
-				type: 'object',
-				properties: {
-					hello: {
-						type: 'string'
-					}
-				}
-			}
-		}
-	}
-}
+const serverOptions = {
+	interface: '0.0.0.0',
+	port: 5000
+};
+
+const templatesFolder = "views"
+fastify.register(fastifyPointOfView, {
+	engine: {
+		ejs
+	},
+	includeViewExtension: true,
+	templates: templatesFolder,
+	options: {
+		filename: resolve(templatesFolder)
+	},
+});
+
+fastify.register(fastifyStatic, {
+	root: path.join(__dirname, 'public'),
+	prefix: '/assets'
+});
 
 fastify
-	.get('/', schema, function (req, reply) {
+	.get('/', (req, reply) => {
 		reply
-			.send({hello: 'world'})
-	})
+			.view('pages/index', {text: 'text'})
+	});
 
 fastify
-	.listen(process.env.PORT || 5000, "0.0.0.0", function(err) {
-		if (err) throw err
-		console.log(`server listening on ${fastify.server.address().port}`)
-	})
+	.listen(
+		process.env.PORT || serverOptions.port,
+		serverOptions.interface,
+		err => {
+			if (err) console.error(err);
+			console.log(`server listening on ${fastify.server.address().port}`)
+		});
